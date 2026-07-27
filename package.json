@@ -1,0 +1,10 @@
+{
+  "name": "foldsig",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "foldsig.mjs",
+  "scripts": {
+    "test": "node --test foldsig.test.mjs"
+  },
+  "license": "MIT"
+}
