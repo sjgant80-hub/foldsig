@@ -63,6 +63,42 @@ test('HASH: content-addressing — same recipe same name, different recipe diffe
   assert.equal(hash(a).length, 32);
 });
 
+// ── hardening: pin the branches the mutation gate found unguarded ─────────────
+test('hardening: isValidShape returns false (not just non-throwing) for null and bad folds', () => {
+  assert.equal(isValidShape(null), false);
+  assert.equal(isValidShape({ seed: 'fold-0', folds: 'nope' }), false);   // folds not an array
+  assert.equal(isValidShape({ seed: 'fold-0' }), false);                  // folds missing
+});
+
+test('hardening: hash is a fixed content-address — golden values pin the exact algorithm', () => {
+  assert.equal(hash(sig([{ axis: 2, angleK: 0, depth: 1 }])), '7b275d20a9a42701888fbca3a9284f17');
+  assert.equal(hash(sig([])), '405f99330413a996134f7a07ce5a9981');
+});
+
+test('hardening: witness.ratio = resolve/forge, and 1 for the empty recipe', () => {
+  const w = witness(sig([{ axis: 2, angleK: 0, depth: 3 }, { axis: 17, angleK: 0, depth: 1 }]));
+  assert.equal(w.forge, 4); assert.equal(w.resolve, 1); assert.equal(w.ratio, 0.25);
+  assert.equal(witness(sig([])).ratio, 1);
+});
+
+test('hardening: validate — junk is not round-trippable/valid; a well-formed runaway is not valid', () => {
+  const junk = validate({ junk: true });
+  assert.equal(junk.roundtrip, false);
+  assert.equal(junk.valid, false);
+  const runaway = validate(sig([{ axis: 2, angleK: 0, depth: 100 }]));   // shape+rt ok, but runs away
+  assert.equal(runaway.shape, true);
+  assert.equal(runaway.roundtrip, true);
+  assert.equal(runaway.witness.stable, false);
+  assert.equal(runaway.valid, false, 'a runaway is never valid, however well-formed');
+});
+
+test('hardening: compose rejects a malformed part outright (either side)', () => {
+  const good = sig([{ axis: 17, angleK: 0, depth: 5 }]);
+  assert.equal(compose({ junk: true }, good).ok, false);
+  assert.match(compose({ junk: true }, good).reason, /malformed/);
+  assert.equal(compose(good, { junk: true }).ok, false);
+});
+
 test('validate: the whole gate in one call, never throws on junk', () => {
   const good = sig([{ axis: 2, angleK: 0, depth: 10 }, { axis: 17, angleK: 0, depth: 17 }]);
   const v = validate(good);

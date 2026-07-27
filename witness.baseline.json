@@ -1,0 +1,7 @@
+[
+  {
+    "mutation": ">= → >",
+    "snippet": "const stable = forge === 0 ? true : resolve >= KAPPA * forge;",
+    "reason": "equivalent mutant — κ (φ⁻¹) is irrational, so resolve === κ·forge is unreachable for integer depths; >= and > are indistinguishable"
+  }
+]
