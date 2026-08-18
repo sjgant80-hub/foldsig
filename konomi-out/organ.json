@@ -4,9 +4,9 @@
   "mesh": "niceassos-mesh",
   "konomified": null,
   "proof": {
-    "benchmark": "assessor-v0.7",
+    "benchmark": "assessor-v0.10",
     "core": "10/10",
-    "hash": "cdc7c3d60bc0dc4ba32bd0273af81982"
+    "hash": "6a07eec7d250cbd425b7d1fa06437aef"
   },
   "behaviour": {
     "gate": "witness",
